@@ -50,10 +50,12 @@ def cli(win, args):
         if paused:
             win.insstr(5, 0, " ===== PAUSE =====")
         try:
-            key = win.getkey()
-            if str(key) == ' ':
+            key = str(win.getkey()).lower()
+            if key == ' ':
                 player.pause()
                 paused = not paused
+            elif key == 'q':
+                break
         except Exception as e:
             pass
 
