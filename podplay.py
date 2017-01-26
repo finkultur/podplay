@@ -57,8 +57,9 @@ def cli(win, args):
 
     player.play()
     paused = False
- 
+
     win.nodelay(True)
+    win.keypad(1)
     key=""
     while 1:
         win.clear()
@@ -67,11 +68,19 @@ def cli(win, args):
         if paused:
             win.insstr(6, 0, " ===== PAUSE =====")
         try:
-            key = str(win.getkey()).lower()
+            key = str(win.getkey())
             if key == ' ':
                 player.pause()
                 paused = not paused
-            elif key == 'q':
+            if key == "KEY_UP":
+                player.set_time(player.get_time()+60*1000)
+            elif key == "KEY_DOWN":
+                player.set_time(player.get_time()-60*1000)
+            elif key == "KEY_LEFT":
+                player.set_time(player.get_time()-10*1000)
+            elif key == "KEY_RIGHT":
+                player.set_time(player.get_time()+10*1000)
+            elif key.lower() == 'q':
                 break
         except Exception as e:
             pass
