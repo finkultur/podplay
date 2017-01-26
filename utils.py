@@ -27,7 +27,7 @@ def print_ep(pod, num=0):
     string = pod['title'].encode("utf-8") + '\n'
     string = str(ep['title']) + '\n'
     if (ep['description'] != ""): 
-        string += ep['description'].encode("utf-8") + '\n'
+        string += ep['description'].encode("utf-8")[:79] + '\n'
     string += date + '\n'
     string += str(time) + " minutes"
     return string

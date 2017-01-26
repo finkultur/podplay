@@ -24,7 +24,20 @@ def set_ep(pod, num=0, pos_str=""):
 
     media = instance.media_new(audio_url)
     player.set_media(media)
+    player.play()
     player.set_position(pos)
+    player.pause()
+
+
+def progress_bar(time, total_time):
+    ratio = time / float(total_time)
+    m, s = divmod(time, 60)
+    h, m = divmod(m, 60)
+    hr_time = "%d:%02d:%02d" % (h, m, s)
+    m, s = divmod(total_time, 60)
+    h, m = divmod(m, 60)
+    hr_total = "%d:%02d:%02d" % (h, m, s)
+    return '[' + 'X'*int(50*ratio) + '_'*int(50-50*ratio) + '] ' + hr_time + ' / ' + hr_total  
 
 # Wrapper for our wrapper :D
 def curses_wraps(fn):
@@ -36,19 +49,23 @@ def cli(win, args):
     global player
     pod = get_pod(get_feed_url(args.podcast))
     ep = get_correct_ep_num(pod, args.episode)
+    dur = int(pod['episodes'][ep]['total_time'])
+    ep_info = print_ep(pod, ep)
+
     init_player()
     set_ep(pod, ep, args.seek)
 
     player.play()
     paused = False
  
-    #win.nodelay(True)
+    win.nodelay(True)
     key=""
     while 1:
         win.clear()
-        win.addstr(print_ep(pod, 0))
+        win.addstr(ep_info)
+        win.addstr(5,0, progress_bar(player.get_time()/1000, dur))
         if paused:
-            win.insstr(5, 0, " ===== PAUSE =====")
+            win.insstr(6, 0, " ===== PAUSE =====")
         try:
             key = str(win.getkey()).lower()
             if key == ' ':
