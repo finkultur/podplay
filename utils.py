@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import requests
 import urllib
 import podcastparser
@@ -5,17 +7,7 @@ import datetime
 
 ITUNES_URL = "https://itunes.apple.com/search"
 
-# Returns the feed url using the itunes search api. Simply takes the first hit.
-def get_feed_url(search_str):
-    payload = {'term': search_str, 'media': 'podcast'}
-    r = requests.get(ITUNES_URL, params=payload)
-    return r.json()['results'][0]['feedUrl']
-
-# Parses a feed_url to a dict
-def get_pod(feed_url):
-    return podcastparser.parse(feed_url, urllib.urlopen(feed_url))
-
-# Returns a list of parsed pod-dicts
+# Returns a list of parsed pod-dicts by using the iTunes Search API.
 def get_pods(search_str):
     payload = {'term': search_str, 'media': 'podcast'}
     r = requests.get(ITUNES_URL, params=payload)
@@ -35,7 +27,7 @@ def print_ep(pod, num=0):
            ).strftime("%Y-%m-%d %H:%M:%S")
 
     string = pod['title'].encode("utf-8") + '\n'
-    string = str(ep['title']) + '\n'
+    string = ep['title'].encode("utf-8") + '\n'
     if (ep['description'] != ""): 
         string += ep['description'].encode("utf-8")[:79] + '\n'
     string += date + '\n'

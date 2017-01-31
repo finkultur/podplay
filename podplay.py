@@ -28,7 +28,8 @@ def set_ep(pod, num=0, pos_str=""):
     player.set_position(pos)
     player.pause()
 
-
+# Returns a very pretty progress bar given current time and total time
+# Looks kinda like this "[XXXXXXXX____________________________] 0:20:05 / 1:02:45
 def progress_bar(time, total_time):
     ratio = time / float(total_time)
     m, s = divmod(time, 60)
@@ -37,7 +38,44 @@ def progress_bar(time, total_time):
     m, s = divmod(total_time, 60)
     h, m = divmod(m, 60)
     hr_total = "%d:%02d:%02d" % (h, m, s)
-    return '[' + 'X'*int(50*ratio) + '_'*int(50-50*ratio) + '] ' + hr_time + ' / ' + hr_total  
+    return '[' + 'X'*int(50*ratio) + '_'*int(50-50*ratio) + '] ' + hr_time + ' / ' + hr_total
+
+# Creates a curses-menu where, if multiple search results, you can select which show.
+# Quits program if hits is empty.
+# args:
+#   win: curses main window
+#   hits: list of parsed pod-dicts
+def select_pod(win, hits):
+    win.clear()
+    if len(hits) <= 0:
+        win.addstr(0, 0, "Search returned no results")
+        win.addstr(2, 0, "Press SPACE or Q to exit")
+        while 1:
+            key = str(win.getkey())
+            if key == ' ' or key.lower() == "q":
+                quit()
+
+    if len(hits) == 1:
+        return hits[0]
+
+    selected = 0
+    while 1:
+        for i in range(0, len(hits)):
+            win.addstr(i, 0, hits[i]['title'],
+                       curses.A_NORMAL if i != selected else curses.A_BOLD)
+        key = ""
+        try:
+            key = str(win.getkey())
+            if key == ' ' or key == "KEY_ENTER":
+                return hits[selected]
+            elif key == "KEY_UP" and selected > 0:
+                selected = selected-1
+            elif key == "KEY_DOWN" and selected < len(hits):
+                selected = selected+1
+            elif key.lower() == 'q':
+                quit()
+        except Exception as e:
+            pass
 
 # Wrapper for our wrapper :D
 def curses_wraps(fn):
@@ -47,7 +85,8 @@ def curses_wraps(fn):
 @curses_wraps
 def cli(win, args):
     global player
-    pod = get_pod(get_feed_url(args.podcast))
+
+    pod = select_pod(win, get_pods(args.podcast))
     ep = get_correct_ep_num(pod, args.episode)
     dur = int(pod['episodes'][ep]['total_time'])
     ep_info = print_ep(pod, ep)
@@ -60,7 +99,6 @@ def cli(win, args):
 
     win.nodelay(True)
     win.keypad(1)
-    key=""
     while 1:
         win.clear()
         win.addstr(ep_info)
