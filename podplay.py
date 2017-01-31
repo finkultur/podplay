@@ -97,8 +97,8 @@ def cli(win, args):
     player.play()
     paused = False
 
-    win.nodelay(True)
     win.keypad(1)
+    win.timeout(500)
     while 1:
         win.clear()
         win.addstr(ep_info)
