@@ -6,6 +6,7 @@ import vlc
 import time
 import curses
 import locale
+import requests_cache
 
 from utils import *
 
@@ -134,6 +135,7 @@ def cli(win, args):
 # Main
 if __name__ == "__main__":
     locale.setlocale(locale.LC_ALL, '')
+    requests_cache.install_cache('itunes_search_cache')
 
     parser = argparse.ArgumentParser()
     parser.add_argument("podcast", nargs='+')
