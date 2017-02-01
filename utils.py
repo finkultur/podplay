@@ -8,8 +8,11 @@ import datetime
 ITUNES_URL = "https://itunes.apple.com/search"
 
 # Returns a list of parsed pod-dicts by using the iTunes Search API.
-def get_pods(search_str):
-    payload = {'term': search_str, 'media': 'podcast'}
+def get_pods(search):
+    # If list, e.g. ['my', 'search', 'string'], concat to "my+search+string"
+    if isinstance(search, list):
+        search = '+'.join(search)
+    payload = {'term': search, 'media': 'podcast'}
     r = requests.get(ITUNES_URL, params=payload)
     pods = []
     for p in r.json()['results']:

@@ -136,13 +136,11 @@ if __name__ == "__main__":
     locale.setlocale(locale.LC_ALL, '')
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("podcast")
+    parser.add_argument("podcast", nargs='+')
     parser.add_argument("-e", "--episode", type=int, default=None,
                         help="Choose a specific episode")
     parser.add_argument("-s", "--seek", type=str, default="",
                         help="Seek to given (seconds or hh:mm:ss or percentage) position")
-    parser.add_argument("-i", "--info", action="store_true",
-                        help="Only print information, do not play")
     args = parser.parse_args()
 
     try:
