@@ -28,25 +28,37 @@ def print_ep(pod, num=0):
 
     string = pod['title'].encode("utf-8") + '\n'
     string = ep['title'].encode("utf-8") + '\n'
-    if (ep['description'] != ""): 
+    if (ep['description'] != ""):
         string += ep['description'].encode("utf-8")[:79] + '\n'
     string += date + '\n'
     string += str(time) + " minutes"
     return string
+
+# Returns a very pretty progress bar given current time and total time
+# Looks kinda like this "[XXXXXXXX____________________________] 0:20:05 / 1:02:45
+def progress_bar(time, total_time):
+    ratio = time / float(total_time)
+    m, s = divmod(time, 60)
+    h, m = divmod(m, 60)
+    hr_time = "%d:%02d:%02d" % (h, m, s)
+    m, s = divmod(total_time, 60)
+    h, m = divmod(m, 60)
+    hr_total = "%d:%02d:%02d" % (h, m, s)
+    return '[' + 'X'*int(50*ratio) + '_'*int(50-50*ratio) + '] ' + hr_time + ' / ' + hr_total
 
 # Parses a position string to a float. Input may be:
 # A percentage such as "12%"
 # A time such as "hh:mm:ss" or "m:ss"
 # A number of seconds such as "123"
 def parse_pos(pos_str, total_dur):
-    pos = 0.0 
+    pos = 0.0
     # If given a percentage
     if pos_str.endswith('%'):
         try:
             return float(pos_str.strip('%'))/100
         except ValueError:
             print("Invalid input, starting podcast from beginning")
-            return 0.0 
+            return 0.0
     # If given a string such as hh:mm:ss or m:ss, calculate total seconds
     elif ':' in pos_str:
         try:
