@@ -1,3 +1,7 @@
 *.swo
 *.swp
 *.pyc
+*.log
+*.sqlite
+*.mp3
+dist/
